@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37710.0 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PMD_EoS_Uplink_Reader", "PMD_EoS_Uplink_Reader.csproj", "{8CD8EFA4-FC21-D7AF-E786-71434B3A2F33}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8CD8EFA4-FC21-D7AF-E786-71434B3A2F33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CD8EFA4-FC21-D7AF-E786-71434B3A2F33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CD8EFA4-FC21-D7AF-E786-71434B3A2F33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CD8EFA4-FC21-D7AF-E786-71434B3A2F33}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {913DB2D5-195D-413E-947B-44A3203BCFED}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="UplinkReader.Ui.MainWindow"
+        Title="PMD:EoS Uplink Reader"
+        Width="520" Height="380"
+        MinWidth="440" MinHeight="320"
+        WindowStartupLocation="CenterScreen">
+  <StackPanel Margin="16" Spacing="12">
+    <TextBlock Text="PMD:EoS Uplink Reader" FontSize="18" FontWeight="SemiBold"/>
+
+    <Grid ColumnDefinitions="Auto,*">
+      <TextBlock Text="Port:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+      <ComboBox Grid.Column="1" x:Name="PortCombo" MinWidth="200"
+                SelectionChanged="OnPortChanged"/>
+    </Grid>
+
+    <TextBlock x:Name="DetectionText" Text="DSPico detected: ..." TextWrapping="Wrap"/>
+
+    <CheckBox x:Name="AutoReconnectCheck" Content="Auto-Reconnect"
+              Checked="OnAutoReconnectToggled" Unchecked="OnAutoReconnectToggled"/>
+
+    <StackPanel Orientation="Horizontal" Spacing="8">
+      <Button x:Name="ConnectButton" Content="Connect" Click="OnConnect" MinWidth="100"/>
+      <Button x:Name="DisconnectButton" Content="Disconnect" Click="OnDisconnect" MinWidth="100" IsEnabled="False"/>
+    </StackPanel>
+
+    <TextBlock x:Name="StatusText" Text="Disconnected" FontSize="14" FontWeight="SemiBold"/>
+    <TextBlock x:Name="StatsText" Text="" TextWrapping="Wrap" Opacity="0.8"/>
+  </StackPanel>
+</Window>
