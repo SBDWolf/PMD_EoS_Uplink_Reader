@@ -23,4 +23,12 @@
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- The address table lives next to the executable; the checked-in
+         repo file is the editable source of truth and is copied to the
+         output directory on build. PreserveNewest: an exe-adjacent file
+         edited newer than the repo file is not clobbered. -->
+    <Content Include="addresses.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

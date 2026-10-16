@@ -1,15 +1,21 @@
 using Avalonia;
+using UplinkReader.SelfTest;
 using UplinkReader.Ui;
 
 namespace UplinkReader;
 
 public static class Program
 {
-    // The app takes no launch parameters: it always starts the GUI.
-    // Debug builds also log every frame and session event to standard
-    // I/O (see ConsoleLog); Release builds are a plain GUI app.
+    // `--selftest` runs the offline protocol tests and exits (no GUI);
+    // otherwise the app starts the GUI. Debug builds also log every frame
+    // and session event to standard I/O (see ConsoleLog).
     [STAThread]
-    public static int Main() => BuildAvaloniaApp().StartWithClassicDesktopLifetime(Array.Empty<string>());
+    public static int Main(string[] args)
+    {
+        if (args.Contains("--selftest"))
+            return SelfTestRunner.Run();
+        return BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
+    }
 
     public static AppBuilder BuildAvaloniaApp() => AppBuilder.Configure<App>()
         .UsePlatformDetect()

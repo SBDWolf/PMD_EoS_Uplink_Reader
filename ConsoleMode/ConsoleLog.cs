@@ -10,23 +10,27 @@ namespace UplinkReader.ConsoleMode;
 /// </summary>
 public static class ConsoleLog
 {
-    /// <summary>Startup banner: mode line + the named slot list.</summary>
+    /// <summary>Startup banner: mode line + the configured address table.</summary>
     public static void Banner()
     {
         #if DEBUG
         Console.WriteLine("PMD:EoS uplink reader (debug build; console log on stdout)");
-        Console.WriteLine("slots: " + string.Join(", ", UplinkSample.SlotNames));
         #endif
     }
 
-    /// <summary>One line per frame: seq, game time, then every named slot value.</summary>
+    /// <summary>One line per frame: seq, game time, then every named sample.</summary>
     public static void Frame(object? sender, UplinkSample s)
     {
         #if DEBUG
-        var parts = new string[UplinkSample.SlotNames.Length];
+        var client = sender as UplinkClient;
+        var names = client?.ActiveConfig?.Names;
+        var parts = new string[s.SampleCount];
         for (int i = 0; i < parts.Length; i++)
-            parts[i] = $"{UplinkSample.SlotNames[i]}={s[i]}";
-        Console.WriteLine($"seq={s.Seq,-9} {s.FormatGameTime()}  {string.Join("  ", parts)}");
+        {
+            string name = names is not null && i < names.Count ? names[i] : $"sample{i}";
+            parts[i] = $"{name}={s[i]}";
+        }
+        Console.WriteLine($"seq={s.Seq,-9} ep={s.Epoch} {s.FormatGameTime()}  {string.Join("  ", parts)}");
         #endif
     }
 

@@ -2,8 +2,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="UplinkReader.Ui.MainWindow"
         Title="PMD:EoS Uplink Reader"
-        Width="520" Height="380"
-        MinWidth="440" MinHeight="320"
+        Width="560" Height="420"
+        MinWidth="480" MinHeight="340"
         WindowStartupLocation="CenterScreen">
   <StackPanel Margin="16" Spacing="12">
     <TextBlock Text="PMD:EoS Uplink Reader" FontSize="18" FontWeight="SemiBold"/>
@@ -24,7 +24,7 @@
       <Button x:Name="DisconnectButton" Content="Disconnect" Click="OnDisconnect" MinWidth="100" IsEnabled="False"/>
     </StackPanel>
 
-    <TextBlock x:Name="StatusText" Text="Disconnected" FontSize="14" FontWeight="SemiBold"/>
+    <TextBlock x:Name="StatusText" Text="Disconnected" FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"/>
     <TextBlock x:Name="StatsText" Text="" TextWrapping="Wrap" Opacity="0.8"/>
   </StackPanel>
 </Window>

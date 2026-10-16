@@ -146,10 +146,26 @@ public partial class MainWindow : Window
 
     private void UpdateStatsText()
     {
+        string phase = _client.Phase switch
+        {
+            UploadPhase.AwaitingConfigAck => "config: waiting for mod ACK",
+            UploadPhase.SendingEntries => "config: uploading entries",
+            UploadPhase.AwaitingCommitAck => "config: committing",
+            UploadPhase.Streaming => "streaming",
+            UploadPhase.Failed => _client.ConfigError is null ? "config FAILED" : $"config FAILED: {_client.ConfigError}",
+            _ => "",
+        };
+        string table = _client.ActiveConfig is { } cfg ? $"table: {cfg.Count} entries (mod max {_client.ModMaxEntries})" : "";
+        StatusText.Text = _client.State switch
+        {
+            UplinkState.Connected => $"Connected - {_client.ActivePort}" + (phase.Length > 0 ? $" - {phase}" : ""),
+            _ => StatusText.Text,
+        };
         StatsText.Text =
             $"frames: {_client.FramesReceived}    seq gaps: {_client.SeqGaps} ({_client.GapFramesLost} lost)" +
-            $"    checksum errors: {_client.ChecksumErrors}    reconnects: {_client.Reconnects}" +
-            $"    bytes: {_client.BytesReceived}";
+            $"    checksum errors: {_client.ChecksumErrors}    resyncs: {_client.Resyncs}" +
+            $"    reconnects: {_client.Reconnects}    bytes: {_client.BytesReceived}" +
+            (table.Length > 0 ? $"    {table}" : "");
     }
 
     private void SaveConfig()
