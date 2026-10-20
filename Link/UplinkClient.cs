@@ -419,7 +419,19 @@ public sealed class UplinkClient : IDisposable
         _expectedEntries += CountEntriesIn(batch);
         _nextBatch++;
         _batchSends = 1;
-        link.Write(batch);
+        try
+        {
+            link.Write(batch);
+        }
+        catch (Exception e) when (e is IOException or TimeoutException)
+        {
+            // Write timeout (the device NAKed the OUT pipe — the game is
+            // busy): NOT fatal. The ack deadline is already set; the next
+            // CheckUploadTimeout re-sends the same batch (idempotent on
+            // the mod side). Port-gone exceptions are NOT caught here —
+            // they propagate and the reconnect path handles them.
+            LogThrottled($"write timed out (game busy?); will re-send");
+        }
     }
 
     // Re-send the current step's command (idempotent on the mod side).
@@ -436,7 +448,21 @@ public sealed class UplinkClient : IDisposable
         // _nextBatch was already advanced past the pending entry; re-send
         // the one before it.
         byte[] batch = _batches[_nextBatch - 1];
-        link.Write(batch);
+        try
+        {
+            link.Write(batch);
+        }
+        catch (Exception e) when (e is IOException or TimeoutException)
+        {
+            // Write timeout (the device NAKed the OUT pipe — the game is
+            // busy): NOT fatal. The ack deadline is already advanced;
+            // the next CheckUploadTimeout re-sends again. Port-gone
+            // exceptions are NOT caught here — they propagate and the
+            // reconnect path handles them. (An unguarded write here
+            // killed the whole reader mid-upload on device.)
+            LogThrottled($"re-send write timed out (game busy?); will retry");
+            return;
+        }
         if (_batchSends == 2)
         {
             LogMessage($"entry {_nextBatch - 1} not confirmed; re-sending (game may be busy)");
@@ -517,7 +543,15 @@ public sealed class UplinkClient : IDisposable
                 // re-replies OK CONFIG).
                 _batchSends++;
                 _ackDeadline = DateTime.UtcNow + ResendDeadline();
-                _link?.Write(UplinkProtocol.ConfigBeginCommand(_config!.Count));
+                try
+                {
+                    _link?.Write(UplinkProtocol.ConfigBeginCommand(_config!.Count));
+                }
+                catch (Exception e) when (e is IOException or TimeoutException)
+                {
+                    LogThrottled("CONFIG_BEGIN re-send write timed out (game busy?); will retry");
+                    break;
+                }
                 if (_batchSends == 2)
                     LogMessage("CONFIG_BEGIN not acknowledged; re-sending (game may be busy)");
                 else if (_batchSends % 20 == 0)
@@ -538,7 +572,15 @@ public sealed class UplinkClient : IDisposable
                 // the table.
                 _batchSends++;
                 _ackDeadline = DateTime.UtcNow + ResendDeadline();
-                _link?.Write(UplinkProtocol.ConfigCommitCommand);
+                try
+                {
+                    _link?.Write(UplinkProtocol.ConfigCommitCommand);
+                }
+                catch (Exception e) when (e is IOException or TimeoutException)
+                {
+                    LogThrottled("COMMIT re-send write timed out (game busy?); will retry");
+                    break;
+                }
                 if (_batchSends == 2)
                     LogMessage("COMMIT not acknowledged; re-sending (game may be busy)");
                 else if (_batchSends % 20 == 0)
