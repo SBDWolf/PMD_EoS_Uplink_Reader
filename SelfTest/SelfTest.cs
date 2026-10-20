@@ -181,7 +181,7 @@ public static class SelfTestRunner
             Check(cfg.WireSize() == 8 + 8 + 6 + 8 + 3, "wire size (8 + 8+6 + 8+3)");
 
             var batches = cfg.BuildBatches();
-            Check(batches.Count == 3, "one entry per batch (3 entries -> 3 batches)");
+            Check(batches.Count == 1, "small config packs into one batch (3 entries, 33 bytes <= cap)");
             Check(batches.Sum(b => b.Length) == cfg.WireSize(), "batches cover all entries");
         }
 
@@ -227,9 +227,9 @@ public static class SelfTestRunner
             var example = AddressConfig.Parse(AddressConfig.ExampleJson, "example");
             Check(example.Count == 14, "example config parses (14 entries)");
             var eb = example.BuildBatches();
-            Check(eb.Count == 14, "one entry per batch (14 batches)");
+            Check(eb.Count > 1 && eb.Count <= 4, "example config splits into a few single-packet batches (14 entries, ~150 B)");
             Check(eb.Sum(b => b.Length) == example.WireSize(), "example batches cover all entries");
-            Check(eb.All(b => b.Length <= 64), "every batch fits one USB packet (<= 64 bytes)");
+            Check(eb.All(b => b.Length <= UplinkProtocol.BatchByteCap), "every batch fits one USB packet (<= BatchByteCap)");
         }
         catch (Exception e)
         {

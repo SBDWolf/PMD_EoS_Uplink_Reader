@@ -387,7 +387,7 @@ public sealed class UplinkClient : IDisposable
             Thread.Sleep(DrainSettleMilliseconds);
             link.Write(UplinkProtocol.ConfigBeginCommand(_config.Count));
             _batchSends = 1;
-            LogMessage($"uploading config: {_config.Count} entries, one packet each");
+            LogMessage($"uploading config: {_config.Count} entries in {_batches.Count} batch{_batches.Count switch { 1 => "", _ => "es" }}");
         }
         catch (Exception e)
         {

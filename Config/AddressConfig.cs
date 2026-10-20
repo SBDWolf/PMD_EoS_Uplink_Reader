@@ -225,20 +225,35 @@ public sealed class AddressConfig
     }
 
     /// <summary>
-    /// Splits the entries into host command batches. ONE ENTRY PER BATCH:
-    /// each serial Write is then a single USB packet (8-14 bytes), which
-    /// is the only delivery mode the mod has ever processed reliably
-    /// (multi-packet writes — the old ≤440-byte batches = 3+ USB packets
-    /// — never reached the mod's parser across 200+ sends, while every
-    /// single-packet command did). Even if the OS driver coalesces
-    /// adjacent writes, a few 8-14-byte entries still fit one 64-byte
-    /// packet.
+    /// Splits the entries into host command batches: entries are packed
+    /// into single Writes up to <see cref="UplinkProtocol.BatchByteCap"/>
+    /// bytes each (one USB packet, ~4-5 entries), so a 15-entry upload is
+    /// ~4 write/ack round trips instead of 15. The mod's parser handles
+    /// multi-command blocks and applies entries idempotently (a re-sent
+    /// batch overwrites already-applied indices in place), so batch
+    /// delivery is retry-until-confirmed. (The old one-entry-per-write
+    /// rule guarded against firmware bugs since fixed: the USB
+    /// task-vs-IRQ race, the USB power-domain glitch and the E15 bulk-IN
+    /// errata. The cap stays at one USB packet because the firmware's OUT
+    /// endpoint is single-buffered with a task-scheduled re-arm —
+    /// back-to-back packets of a multi-packet write NAK.)
     /// </summary>
     public List<byte[]> BuildBatches()
     {
-        var batches = new List<byte[]>(Count);
+        var batches = new List<byte[]>();
+        var current = new List<byte>();
         for (int i = 0; i < Count; i++)
-            batches.Add(EncodeEntryCommand(i));
+        {
+            byte[] cmd = EncodeEntryCommand(i);
+            if (current.Count > 0 && current.Count + cmd.Length > UplinkProtocol.BatchByteCap)
+            {
+                batches.Add(current.ToArray());
+                current.Clear();
+            }
+            current.AddRange(cmd);
+        }
+        if (current.Count > 0)
+            batches.Add(current.ToArray());
         return batches;
     }
 

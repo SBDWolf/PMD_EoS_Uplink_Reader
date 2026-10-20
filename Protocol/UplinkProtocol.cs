@@ -42,8 +42,14 @@ public static class UplinkProtocol
     public const int MaxSamples = 256;
     public const int MaxSteps = 4;
     public const int MaxOffset = 0x7FFF;
-    // Host command writes are kept to ONE entry each so every Write is a
-    // single USB packet (see AddressConfig.BuildBatches).
+    // CONFIG_ENTRY batches are packed up to this many bytes per Write
+    // (see AddressConfig.BuildBatches). Cap = one USB packet (64 B): the
+    // firmware's OUT endpoint is single-buffered and its re-arm runs in
+    // the firmware main loop, so back-to-back packets of a multi-packet
+    // write NAK and are lost. One packet per write keeps the proven
+    // delivery mode while still cutting the write/ack round trips ~4-5x
+    // vs one entry per write.
+    public const int BatchByteCap = 64;
 
     public const byte Magic0 = (byte)'P';
     public const byte Magic1 = (byte)'M';

@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "comment": "Default address table: the mod's original 14 built-in samples (EU). Edit freely - the reader uploads this to the DS on every connect.",
+  "addresses": [
+    {
+      "name": "play_time_seconds",
+      "address": "0x022ABFD4",
+      "width": 4,
+      "comment": "PLAY_TIME seconds"
+    },
+    {
+      "name": "play_time_frame_counter",
+      "address": "0x022ABFD8",
+      "width": 1,
+      "comment": "PLAY_TIME frames (0-59)"
+    },
+    {
+      "name": "scenario_main_flag_main",
+      "address": "0x022ABAA8",
+      "width": 1
+    },
+    {
+      "name": "scenario_main_flag_sub",
+      "address": "0x022ABAA9",
+      "width": 1
+    },
+    {
+      "name": "request_clear_count",
+      "address": "0x022ABADB",
+      "width": 1
+    },
+    {
+      "name": "brightness",
+      "address": "0x022A40E4",
+      "width": 2
+    },
+    {
+      "name": "magic_number",
+      "address": "0x022A3670",
+      "width": 4
+    },
+    {
+      "name": "overlay1_start",
+      "address": "0x02329D40",
+      "width": 2
+    },
+    {
+      "name": "dungeon_ptr",
+      "address": "0x02354138",
+      "width": 4,
+      "comment": "raw pointer; 0 outside dungeons"
+    },
+    {
+      "name": "current_script_id_part1",
+      "address": "0x02325ACA",
+      "width": 4
+    },
+    {
+      "name": "current_script_id_part2",
+      "address": "0x02325ACE",
+      "width": 4
+    },
+    {
+      "name": "dungeon_is_clearing_floor",
+      "path": [
+        "0x02354138",
+        "*+0x0",
+        "+0x6"
+      ],
+      "width": 1,
+      "comment": "dungeon_ptr -> +0x6"
+    },
+    {
+      "name": "dungeon_current_dungeon_id",
+      "path": [
+        "0x02354138",
+        "*+0x0",
+        "+0x748"
+      ],
+      "width": 1,
+      "comment": "dungeon_ptr -> +0x748"
+    },
+    {
+      "name": "dungeon_current_floor",
+      "path": [
+        "0x02354138",
+        "*+0x0",
+        "+0x749"
+      ],
+      "width": 1,
+      "comment": "dungeon_ptr -> +0x749"
+    }
+  ]
+}
